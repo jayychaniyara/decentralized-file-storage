@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,11 +11,11 @@ const Navbar = () => {
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="flex items-center space-x-2">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center">
-            <span className="text-white font-bold text-xl">N</span>
+            <span className="text-white font-bold text-xl">B</span>
           </div>
-          <span className="text-white font-bold text-xl">NeoStore</span>
+          <span className="text-white font-bold text-xl">BlockStore</span>
         </Link>
-        
+
         <div className="flex items-center space-x-4">
           {isLoggedIn ? (
             <Link to="/dashboard">

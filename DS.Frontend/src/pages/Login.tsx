@@ -1,41 +1,47 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 
 const Login = () => {
   const { toast } = useToast();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Demo login functionality
     if (email && password) {
       toast({
         title: "Login Successful",
-        description: "Welcome back to NeoStore!",
+        description: "Welcome back to BlockStore!"
       });
     } else {
       toast({
         title: "Login Failed",
         description: "Please fill in all fields",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-  
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-neon-blue/20 blur-3xl rounded-full animate-pulse-glow"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-1/2 h-1/2 bg-neon-purple/20 blur-3xl rounded-full animate-pulse-glow delay-1000"></div>
+        <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-neon-blue/10 blur-2xl rounded-full"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-1/2 h-1/2 bg-neon-purple/10 blur-2xl rounded-full"></div>
       </div>
-      
+
       <Card className="w-full max-w-md glass-card animate-fade-in">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-6">
@@ -43,7 +49,7 @@ const Login = () => {
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center">
                 <span className="text-white font-bold text-xl">N</span>
               </div>
-              <span className="text-white font-bold text-xl">NeoStore</span>
+              <span className="text-white font-bold text-xl">BlockStore</span>
             </Link>
           </div>
           <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
