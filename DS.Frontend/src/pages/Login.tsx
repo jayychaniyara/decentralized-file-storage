@@ -47,7 +47,7 @@ const Login = () => {
           <div className="flex justify-center mb-6">
             <Link to="/" className="flex items-center space-x-2">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center">
-                <span className="text-white font-bold text-xl">N</span>
+                <span className="text-white font-bold text-xl">B</span>
               </div>
               <span className="text-white font-bold text-xl">BlockStore</span>
             </Link>
