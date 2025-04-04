@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/use-toast";
+import { registerUser } from "@/API/auth";
 
 const Signup = () => {
   const { toast } = useToast();
@@ -24,20 +25,38 @@ const Signup = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Demo signup functionality
-    if (name && email && password && agreed) {
+    if (!name || !email || !password || !agreed) {
+      return toast({
+        title: "Signup Failed",
+        description: "Please fill in all fields and agree to the terms",
+        variant: "destructive"
+      });
+    }
+
+    try {
+      await registerUser({
+        username: name,
+        email,
+        password
+      });
+
       toast({
-        title: "Account created",
+        title: "✅ Account created",
         description:
           "Welcome to BlockStore! Your account has been created successfully."
       });
-    } else {
+
+      setName("");
+      setEmail("");
+      setPassword("");
+      setAgreed(false);
+    } catch (err: any) {
       toast({
         title: "Signup Failed",
-        description: "Please fill in all fields and agree to the terms",
+        description: err.response?.data?.error || "Something went wrong.",
         variant: "destructive"
       });
     }
@@ -76,6 +95,7 @@ const Signup = () => {
             Enter your details to join our decentralized network
           </CardDescription>
         </CardHeader>
+
         <CardContent className="space-y-4">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
@@ -127,25 +147,21 @@ const Signup = () => {
                 className="text-sm text-gray-400 font-medium leading-none"
               >
                 I agree to the{" "}
-                <span className="inline">
-                  <button
-                    type="button"
-                    onClick={() => openModal("terms")}
-                    className="text-neon-blue hover:text-neon-purple transition-colors focus:outline-none"
-                  >
-                    terms of service
-                  </button>
-                </span>{" "}
+                <button
+                  type="button"
+                  onClick={() => openModal("terms")}
+                  className="text-neon-blue hover:text-neon-purple transition-colors focus:outline-none"
+                >
+                  terms of service
+                </button>{" "}
                 and{" "}
-                <span className="inline">
-                  <button
-                    type="button"
-                    onClick={() => openModal("privacy")}
-                    className="text-neon-blue hover:text-neon-purple transition-colors focus:outline-none"
-                  >
-                    privacy policy
-                  </button>
-                </span>
+                <button
+                  type="button"
+                  onClick={() => openModal("privacy")}
+                  className="text-neon-blue hover:text-neon-purple transition-colors focus:outline-none"
+                >
+                  privacy policy
+                </button>
               </label>
             </div>
             <Button
@@ -156,6 +172,7 @@ const Signup = () => {
             </Button>
           </form>
         </CardContent>
+
         <CardFooter>
           <div className="text-center w-full text-sm">
             Already have an account?{" "}

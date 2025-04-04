@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,27 +11,51 @@ import {
   CardTitle
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import { loginUser } from "@/API/auth"; // <-- import your function
 
 const Login = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Demo login functionality
-    if (email && password) {
-      toast({
-        title: "Login Successful",
-        description: "Welcome back to BlockStore!"
-      });
-    } else {
+    if (!email || !password) {
       toast({
         title: "Login Failed",
         description: "Please fill in all fields",
         variant: "destructive"
       });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await loginUser({ email, password });
+      const token = response.data.token;
+
+      localStorage.setItem("token", token);
+
+      toast({
+        title: "Login Successful",
+        description: "Welcome back to BlockStore!"
+      });
+
+      navigate("/dashboard");
+    } catch (error: any) {
+      toast({
+        title: "Login Failed",
+        description:
+          error.response?.data?.error ||
+          error.message ||
+          "Something went wrong",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -95,9 +119,10 @@ const Login = () => {
             </div>
             <Button
               type="submit"
+              disabled={loading}
               className="w-full bg-gradient-to-r from-neon-blue to-neon-purple hover:shadow-lg hover:shadow-neon-purple/20 transition-all duration-300"
             >
-              Sign In
+              {loading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
         </CardContent>
