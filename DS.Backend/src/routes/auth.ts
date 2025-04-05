@@ -47,9 +47,12 @@ router.post("/login", async (req: Request, res: Response) : Promise<any> => {
             return res.status(400).json({ error: "Invalid credentials" });
         }
 
+        user.lastLogin = new Date();
+        await user.save();
+
         const token = generateToken({ id: user._id });
 
-        return res.status(200).json({ message: "Login successful", token });
+        return res.status(200).json({ message: "Login successful", token , user: { lastLogin: user.lastLogin }});
     } catch (err) {
         console.error("Login Error:", err);
         return res.status(500).json({ error: "Server error" });

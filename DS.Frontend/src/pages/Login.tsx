@@ -35,9 +35,10 @@ const Login = () => {
     setLoading(true);
     try {
       const response = await loginUser({ email, password });
-      const token = response.data.token;
+      const { token, user } = response.data;
 
       localStorage.setItem("token", token);
+      localStorage.setItem("lastLogin", user.lastLogin);
 
       toast({
         title: "Login Successful",
