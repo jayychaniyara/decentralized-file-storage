@@ -32,7 +32,7 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter basename="/decentralized-file-storage">
           <AppRoutes />
         </BrowserRouter>
       </TooltipProvider>

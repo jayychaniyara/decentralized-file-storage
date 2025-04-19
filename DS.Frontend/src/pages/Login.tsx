@@ -11,7 +11,7 @@ import {
   CardTitle
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { loginUser } from "@/API/auth"; // <-- import your function
+import { loginUser } from "@/API/auth"; 
 
 const Login = () => {
   const { toast } = useToast();

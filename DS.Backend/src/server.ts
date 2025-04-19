@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db";
 import authRouter from "./routes/auth"; 
+import userRouter from "./routes/user.route"
 
 dotenv.config();
 const app = express();
@@ -14,6 +15,7 @@ app.use(express.json());
 
 connectDB();
 
+app.use('/api/users', userRouter);
 app.use("/auth", authRouter);
 
 app.listen(PORT, () => {
