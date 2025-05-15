@@ -1,4 +1,3 @@
-import React from "react";
 import { Shield, Database, Zap, Lock } from "lucide-react";
 
 const features = [

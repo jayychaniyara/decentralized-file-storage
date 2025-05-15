@@ -53,7 +53,6 @@ const HowItWorksSection = forwardRef<HTMLDivElement>((props, ref) => {
             </div>
           ))}
 
-          {/* Connection lines between steps */}
           <div className="hidden md:block absolute top-1/2 left-1 w-1/3 h-0.5 bg-gradient-to-r from-neon-blue to-neon-purple"></div>
           <div className="hidden md:block absolute top-1/2 right-1 w-1/3 h-0.5 bg-gradient-to-r from-neon-purple to-neon-cyan"></div>
         </div>
