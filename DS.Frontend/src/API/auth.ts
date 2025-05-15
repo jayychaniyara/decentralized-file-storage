@@ -5,7 +5,12 @@ export const registerUser = async (data: {
   email: string;
   password: string;
 }) => {
-  return axios.post("/api/auth/register", data);
+ try {
+    const res = await axios.post("/api/auth/register", data);
+    return res.data;
+  } catch (err: any) {
+    throw err?.response?.data?.error || "Something went wrong.";
+  }
 };
 
 export const loginUser = async (data: {
