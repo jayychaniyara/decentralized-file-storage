@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db";
-import authRouter from "./routes/auth"; 
+import authRouter from "./routes/auth.route"; 
 import userRouter from "./routes/user.route"
 
 dotenv.config();
@@ -16,7 +16,7 @@ app.use(express.json());
 connectDB();
 
 app.use('/api/users', userRouter);
-app.use("/auth", authRouter);
+app.use("/api/auth", authRouter);
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);

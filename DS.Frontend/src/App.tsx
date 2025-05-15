@@ -9,6 +9,9 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import { useAutoLogin } from "./hooks/useAutoLogin";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import { LoaderProvider } from "@/contexts/LoaderContext";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +24,8 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
@@ -29,13 +34,15 @@ const AppRoutes = () => {
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter basename="/decentralized-file-storage">
-          <AppRoutes />
-        </BrowserRouter>
-      </TooltipProvider>
+      <LoaderProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter basename="/decentralized-file-storage">
+            <AppRoutes />
+          </BrowserRouter>
+        </TooltipProvider>
+      </LoaderProvider>
     </QueryClientProvider>
   );
 };

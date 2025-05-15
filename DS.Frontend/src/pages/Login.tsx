@@ -11,7 +11,7 @@ import {
   CardTitle
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { loginUser } from "@/API/auth"; 
+import { loginUser } from "@/API/auth";
 
 const Login = () => {
   const { toast } = useToast();
@@ -102,12 +102,12 @@ const Login = () => {
                 <label htmlFor="password" className="text-sm font-medium">
                   Password
                 </label>
-                <a
-                  href="#"
+                <Link
+                  to="/forgot-password"
                   className="text-sm text-neon-blue hover:text-neon-purple transition-colors"
                 >
                   Forgot password?
-                </a>
+                </Link>
               </div>
               <Input
                 id="password"

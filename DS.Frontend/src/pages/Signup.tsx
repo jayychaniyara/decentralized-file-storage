@@ -1,9 +1,8 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog } from "@headlessui/react";
-
 import {
   Card,
   CardContent,
@@ -14,49 +13,139 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/use-toast";
-import { registerUser } from "@/API/auth";
+import { registerUser, SignupSendOTP, SignupVerifyOTP } from "@/API/auth";
+import { useLoader } from "@/contexts/LoaderContext";
 
 const Signup = () => {
   const { toast } = useToast();
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [agreed, setAgreed] = React.useState(false);
+  const navigate = useNavigate();
+  const { showLoader, hideLoader } = useLoader();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [agreed, setAgreed] = useState(false);
+
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpInputs, setOtpInputs] = useState(["", "", "", "", "", ""]);
+  const otpRefs = useRef<HTMLInputElement[]>([]);
+
+  const [isDisabled, setIsDisabled] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const [emailError, setEmailError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
-    if (!name || !email || !password || !agreed) {
-      return toast({
-        title: "Signup Failed",
-        description: "Please fill in all fields and agree to the terms",
+  const allFieldsFilled =
+    name && email && password && confirmPassword && agreed;
+
+  const validateEmail = (email: string) => {
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return pattern.test(email);
+  };
+
+  const handleEmailBlur = () => {
+    if (!email) {
+      setEmailError("Email is required.");
+    } else if (!validateEmail(email)) {
+      setEmailError("Enter a valid email.");
+    } else {
+      setEmailError("");
+    }
+  };
+
+  const handleSendOtp = async () => {
+    handleEmailBlur();
+
+    if (!email || emailError) {
+      toast({
+        title: "Invalid Email",
+        description: "Please provide a valid email address.",
         variant: "destructive"
       });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match.");
+      toast({
+        title: "Password Mismatch",
+        description: "Password and confirm password must match.",
+        variant: "destructive"
+      });
+      return;
+    } else {
+      setConfirmPasswordError("");
     }
 
     try {
-      await registerUser({
-        username: name,
-        email,
-        password
+      showLoader();
+      await SignupSendOTP(email);
+      toast({ title: "OTP Sent", description: "Check your email inbox." });
+      setIsDisabled(true);
+      setOtpSent(true);
+    } catch (err: any) {
+      toast({
+        title: "OTP Error",
+        description: err.response?.data?.error || "Failed to send OTP.",
+        variant: "destructive"
       });
+    } finally {
+      hideLoader();
+    }
+  };
+
+  const handleOtpChange = (index: number, value: string) => {
+    if (!/^\d?$/.test(value)) return;
+    const newOtp = [...otpInputs];
+    newOtp[index] = value;
+    setOtpInputs(newOtp);
+
+    if (value && index < 5) {
+      otpRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleVerifyOtpAndSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (otpInputs.some((digit) => digit.trim() === "")) {
+      toast({
+        title: "Incomplete OTP",
+        description: "Please enter the 6-digit OTP.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match.");
+      toast({
+        title: "Password Mismatch",
+        description: "Password and confirm password must match.",
+        variant: "destructive"
+      });
+      return;
+    } else {
+      setConfirmPasswordError("");
+    }
+
+    try {
+      const fullOtp = otpInputs.join("");
+      await SignupVerifyOTP(email, fullOtp);
+      await registerUser({ username: name, email, password });
 
       toast({
-        title: "✅ Account created",
-        description:
-          "Welcome to BlockStore! Your account has been created successfully."
+        title: "Account Created 🎉",
+        description: "Welcome to BlockStore!"
       });
-
-      setName("");
-      setEmail("");
-      setPassword("");
-      setAgreed(false);
+      navigate("/login");
     } catch (err: any) {
       toast({
         title: "Signup Failed",
-        description: err.response?.data?.error || "Something went wrong.",
+        description:
+          err.response?.data?.error || "OTP verification or signup failed.",
         variant: "destructive"
       });
     }
@@ -65,8 +154,8 @@ const Signup = () => {
   const openModal = (type: "terms" | "privacy") => {
     setModalContent(
       type === "terms"
-        ? "By signing up, you agree to our Terms of Service. These terms outline your rights and responsibilities when using our decentralized file storage platform, including file uploads, data security, and service limitations. Please review them carefully before proceeding."
-        : "Our Privacy Policy explains how we collect, use, and protect your data. Since we use blockchain technology and IPFS for file storage, your files are stored securely and cannot be accessed by unauthorized parties. We do not sell or share your data with third parties."
+        ? "By signing up, you agree to our Terms of Service..."
+        : "Our Privacy Policy explains how we collect and use your data..."
     );
     setModalOpen(true);
   };
@@ -92,37 +181,49 @@ const Signup = () => {
             Create an account
           </CardTitle>
           <CardDescription className="text-center">
-            Enter your details to join our decentralized network
+            Join our decentralized network
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-4">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleVerifyOtpAndSignup} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="name" className="text-sm font-medium">
                 Full Name
               </label>
               <Input
                 id="name"
-                placeholder="John Doe"
-                className="bg-muted/50"
+                disabled={isDisabled}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                placeholder="John Doe"
+                className={`bg-muted/50 ${
+                  isDisabled ? "border border-neon-blue" : ""
+                }`}
               />
             </div>
-            <div className="space-y-2">
+
+            <div className="space-y-1">
               <label htmlFor="email" className="text-sm font-medium">
                 Email
               </label>
               <Input
                 id="email"
                 type="email"
-                placeholder="your@email.com"
-                className="bg-muted/50"
+                disabled={isDisabled}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={handleEmailBlur}
+                placeholder="you@example.com"
+                className={`bg-muted/50 ${
+                  isDisabled ? "border border-neon-blue" : ""
+                } ${emailError ? "border-red-500" : ""}`}
               />
+              {emailError && (
+                <p className="text-sm text-red-500">{emailError}</p>
+              )}
             </div>
+
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">
                 Password
@@ -130,16 +231,41 @@ const Signup = () => {
               <Input
                 id="password"
                 type="password"
-                placeholder="Create a strong password"
-                className="bg-muted/50"
+                disabled={isDisabled}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder="Create a strong password"
+                className={`bg-muted/50 ${
+                  isDisabled ? "border border-neon-blue" : ""
+                }`}
               />
             </div>
+
+            <div className="space-y-1">
+              <label htmlFor="confirm-password" className="text-sm font-medium">
+                Confirm Password
+              </label>
+              <Input
+                id="confirm-password"
+                type="password"
+                disabled={isDisabled}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Re-enter your password"
+                className={`bg-muted/50 ${
+                  isDisabled ? "border border-neon-blue" : ""
+                } ${confirmPasswordError ? "border-red-500" : ""}`}
+              />
+              {confirmPasswordError && (
+                <p className="text-sm text-red-500">{confirmPasswordError}</p>
+              )}
+            </div>
+
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="terms"
                 checked={agreed}
+                disabled={isDisabled}
                 onCheckedChange={(checked) => setAgreed(checked as boolean)}
               />
               <label
@@ -150,7 +276,7 @@ const Signup = () => {
                 <button
                   type="button"
                   onClick={() => openModal("terms")}
-                  className="text-neon-blue hover:text-neon-purple transition-colors focus:outline-none"
+                  className="text-neon-blue hover:text-neon-purple"
                 >
                   terms of service
                 </button>{" "}
@@ -158,18 +284,44 @@ const Signup = () => {
                 <button
                   type="button"
                   onClick={() => openModal("privacy")}
-                  className="text-neon-blue hover:text-neon-purple transition-colors focus:outline-none"
+                  className="text-neon-blue hover:text-neon-purple"
                 >
                   privacy policy
                 </button>
               </label>
             </div>
-            <Button
-              type="submit"
-              className="w-full bg-gradient-to-r from-neon-blue to-neon-purple hover:shadow-lg hover:shadow-neon-purple/20 transition-all duration-300"
-            >
-              Create Account
-            </Button>
+
+            {otpSent ? (
+              <>
+                <div className="flex justify-between gap-2">
+                  {otpInputs.map((digit, idx) => (
+                    <Input
+                      key={idx}
+                      ref={(el) => (otpRefs.current[idx] = el!)}
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(idx, e.target.value)}
+                      className="w-10 h-10 text-center text-lg border border-neon-blue"
+                    />
+                  ))}
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full mt-4 bg-gradient-to-r from-neon-blue to-neon-purple"
+                >
+                  Create Account
+                </Button>
+              </>
+            ) : (
+              <Button
+                type="button"
+                disabled={!allFieldsFilled}
+                onClick={handleSendOtp}
+                className="w-full bg-gradient-to-r from-neon-blue to-neon-purple"
+              >
+                Send OTP
+              </Button>
+            )}
           </form>
         </CardContent>
 
@@ -178,7 +330,7 @@ const Signup = () => {
             Already have an account?{" "}
             <Link
               to="/login"
-              className="text-neon-blue hover:text-neon-purple transition-colors font-medium"
+              className="text-neon-blue hover:text-neon-purple font-medium"
             >
               Sign in
             </Link>
@@ -194,14 +346,14 @@ const Signup = () => {
         <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center px-4">
           <div className="bg-gray-900 text-white p-6 rounded-2xl shadow-lg max-w-md w-full mx-auto">
             <h2 className="text-lg font-semibold text-neon-blue">
-              {modalContent.startsWith("Our Privacy Policy")
+              {modalContent.startsWith("Our Privacy")
                 ? "Privacy Policy"
                 : "Terms of Service"}
             </h2>
             <p className="mt-2 text-sm text-gray-300">{modalContent}</p>
             <button
               onClick={() => setModalOpen(false)}
-              className="mt-4 py-2 rounded-lg w-full bg-gradient-to-r from-neon-blue to-neon-purple hover:shadow-lg hover:shadow-neon-purple/20 transition-all duration-300"
+              className="mt-4 py-2 rounded-lg w-full bg-gradient-to-r from-neon-blue to-neon-purple"
             >
               Close
             </button>

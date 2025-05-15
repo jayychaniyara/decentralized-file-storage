@@ -5,12 +5,37 @@ export const registerUser = async (data: {
   email: string;
   password: string;
 }) => {
-  return axios.post("/auth/register", data);
+  return axios.post("/api/auth/register", data);
 };
 
 export const loginUser = async (data: {
   email: string;
   password: string;
 }) => {
-  return axios.post("/auth/login", data);
+  return axios.post("/api/auth/login", data);
+};
+
+export const resetPasswordSendOtp = async (email: string) => {
+  const response = await axios.post("/api/auth/resetPasswordSendOTP", { email });
+  return response.data;
+};
+
+export const resetPasswordVerifyOtp = async (email: string, otp: string) => {
+  const response = await axios.post("/api/auth/resetPasswordVerifyOTP", { email, otp });
+  return response.data;
+};
+
+export const resetPassword = async (email: string, password: string) => {
+  const response = await axios.post("/api/auth/reset-password", { email, password });
+  return response.data;
+};
+
+export const SignupSendOTP = async (email: string) => {
+  const response = await axios.post("/api/auth/SignupSendOTP", { email });
+  return response.data;
+};
+
+export const SignupVerifyOTP = async (email: string, otp: string) => {
+  const response = await axios.post("/api/auth/SignupVerifyOTP", { email, otp });
+  return response.data;
 };
