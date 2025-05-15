@@ -82,7 +82,6 @@ const ForgotPassword = () => {
   const handleConfirmOtp = async () => {
     const finalOtp = otp.join("").trim();
 
-    // Check if OTP is empty
     if (!finalOtp) {
       toast({
         title: "Missing OTP",
@@ -92,7 +91,6 @@ const ForgotPassword = () => {
       return;
     }
 
-    // Check if OTP is not numeric or not 6 digits
     if (!/^\d{6}$/.test(finalOtp)) {
       toast({
         title: "Invalid OTP",
