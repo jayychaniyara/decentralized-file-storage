@@ -38,7 +38,7 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter basename="/decentralized-file-storage">
+          <BrowserRouter basename="/BlockStore">
             <AppRoutes />
           </BrowserRouter>
         </TooltipProvider>

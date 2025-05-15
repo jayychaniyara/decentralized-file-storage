@@ -33,7 +33,7 @@ export const sendOtpEmail = async (to: string, otp: string, name?: string): Prom
 
       <p style="font-size: 13px; color: #888;">BlockStore - Decentralized Storage Platform</p>
       <p style="font-size: 13px; color: #6a11cb;">
-        <a href="https://jayychaniyara.github.io/decentralized-file-storage/" target="_blank">
+        <a href="https://jayychaniyara.github.io/BlockStore/" target="_blank">
           Visit our website
         </a>
       </p>

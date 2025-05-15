@@ -1,7 +1,7 @@
 {
   "name": "vite_react_shadcn_ts",
   "private": true,
-  "homepage": "https://jayychaniyara.github.io/decentralized-file-storage/",
+  "homepage": "https://jayychaniyara.github.io/BlockStore/",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
