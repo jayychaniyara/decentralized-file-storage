@@ -28,10 +28,6 @@ const AuthGuard = () => {
       } else {
         removeToken();
         navigate("/index", { replace: true });
-        toast({
-          title: "Please Login/Signup",
-          description: "Unauthorised"
-      });
       }
     };
 
