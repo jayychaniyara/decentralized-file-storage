@@ -8,7 +8,9 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET || "default_secret";
 
 export function generateToken(payload: object): string {
-    return jwt.sign(payload, JWT_SECRET); 
+     return jwt.sign(payload, process.env.JWT_SECRET as string, {
+    expiresIn: "1d"
+  });
 }
 
 export function verifyJwtToken(token: string): any {

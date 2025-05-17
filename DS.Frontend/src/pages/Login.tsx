@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Cookies from "js-cookie";
 import {
   Card,
   CardContent,
@@ -11,11 +12,13 @@ import {
   CardTitle
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import { useLoader } from "@/contexts/LoaderContext";
 import { loginUser } from "@/API/auth";
 
 const Login = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { showLoader, hideLoader } = useLoader();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -34,19 +37,21 @@ const Login = () => {
 
     setLoading(true);
     try {
+      showLoader();
       const response = await loginUser({ email, password });
       const { token, user } = response.data;
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("lastLogin", user.lastLogin);
+      Cookies.set("token", token, { expires: 1 });
 
       toast({
         title: "Login Successful",
         description: "Welcome back to BlockStore!"
       });
 
-      navigate("/dashboard");
+      navigate(`/dashboard/${user.id}`);
+      hideLoader();
     } catch (error: any) {
+      hideLoader();
       toast({
         title: "Login Failed",
         description:
@@ -57,6 +62,7 @@ const Login = () => {
       });
     } finally {
       setLoading(false);
+      hideLoader();
     }
   };
 

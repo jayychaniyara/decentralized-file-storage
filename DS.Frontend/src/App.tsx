@@ -12,6 +12,8 @@ import { useAutoLogin } from "./hooks/useAutoLogin";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import { LoaderProvider } from "@/contexts/LoaderContext";
+import AuthGuard from "./routes/AuthGuard";
+import DashboardGuard from "./routes/DashboardGuard";
 
 const queryClient = new QueryClient();
 
@@ -20,10 +22,18 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
+      {/* <Route path="/" element={<Index />} /> */}
+      <Route path="/" element={<AuthGuard />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route
+        path="/dashboard/:id"
+        element={
+          <DashboardGuard>
+            <Dashboard />
+          </DashboardGuard>
+        }
+      />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="*" element={<NotFound />} />

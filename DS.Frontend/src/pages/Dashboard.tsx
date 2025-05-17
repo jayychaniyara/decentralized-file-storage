@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   User,
   FileIcon,
@@ -8,7 +8,7 @@ import {
   Search,
   LogOut
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DashboardStats from "@/components/dashboard/DashboardStats";
@@ -20,10 +20,28 @@ import {
   TooltipContent,
   TooltipTrigger
 } from "@/components/ui/tooltip";
+import { getUserIdFromToken, removeToken } from "@/utils/tokenUtils";
+import { useLoader } from "@/contexts/LoaderContext";
+import { useToast } from "@/components/ui/use-toast";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { showLoader, hideLoader } = useLoader();
+  const { id } = useParams();
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    showLoader();
+    const tokenUserId = getUserIdFromToken();
+
+    if (!tokenUserId || tokenUserId !== id) {
+      removeToken();
+      navigate("/login", { replace: true });
+      hideLoader();
+    }
+    hideLoader();
+  }, [id, navigate]);
 
   // Mock data - In a real app, this would come from an API
   const userStats = {
@@ -103,8 +121,12 @@ const Dashboard = () => {
   const recentFiles = generateMockFiles();
 
   const handleLogout = () => {
-    // In a real application, add logout logic here
-    navigate("/");
+    removeToken();
+    navigate("/login");
+    toast({
+      title: "Logged out",
+      description: "You’ve been successfully logged out"
+    });
   };
 
   const handleSearch = (e: React.FormEvent) => {

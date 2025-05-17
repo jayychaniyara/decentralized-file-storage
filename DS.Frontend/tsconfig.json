@@ -13,6 +13,7 @@
     "noUnusedParameters": false,
     "skipLibCheck": true,
     "allowJs": true,
+    "jsx": "react-jsx",
     "noUnusedLocals": false,
     "strictNullChecks": false
   }
