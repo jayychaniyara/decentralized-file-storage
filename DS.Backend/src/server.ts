@@ -9,8 +9,8 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
-  "https://jayychaniyara.github.io/", 
-  "http://localhost:8080/"
+  "https://jayychaniyara.github.io",
+  "http://localhost:8080"
 ];
 
 app.use(
