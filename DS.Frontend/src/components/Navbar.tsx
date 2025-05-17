@@ -8,7 +8,7 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-3 glass-card space-x-2">
       <div className="container mx-auto flex items-center justify-between">
-        <Link to="/" className="flex items-center space-x-2">
+        <Link to="/index" className="flex items-center space-x-2">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center hidden md:inline-flex">
             <span className="text-white font-bold text-xl">B</span>
           </div>

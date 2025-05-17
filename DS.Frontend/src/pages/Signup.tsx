@@ -170,7 +170,7 @@ const Signup = () => {
       <Card className="w-full max-w-md glass-card animate-fade-in">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-6">
-            <Link to="/" className="flex items-center space-x-2">
+            <Link to="/index" className="flex items-center space-x-2">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center">
                 <span className="text-white font-bold text-xl">B</span>
               </div>
