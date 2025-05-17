@@ -13,11 +13,11 @@ const AuthGuard = () => {
           navigate(`/dashboard/${userId}`, { replace: true });
         } else {
           removeToken();
-          navigate("/login", { replace: true });
+          navigate("/index", { replace: true });
         }
       } else {
         removeToken();
-        navigate("/login", { replace: true });
+        navigate("/index", { replace: true });
       }
     };
 
