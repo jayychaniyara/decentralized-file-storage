@@ -13,8 +13,15 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/use-toast";
-import { registerUser, SignupSendOTP, SignupVerifyOTP } from "@/API/auth";
+import {
+  googleLogin,
+  registerUser,
+  SignupSendOTP,
+  SignupVerifyOTP
+} from "@/API/auth";
 import { useLoader } from "@/contexts/LoaderContext";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import Cookies from "js-cookie";
 
 const Signup = () => {
   const { toast } = useToast();
@@ -148,6 +155,32 @@ const Signup = () => {
           err.response?.data?.error || "OTP verification or signup failed.",
         variant: "destructive"
       });
+    }
+  };
+
+  const handleGoogleLoginSuccess = async (
+    credentialResponse: CredentialResponse
+  ) => {
+    if (!credentialResponse.credential) {
+      toast({ title: "Google login failed", variant: "destructive" });
+      return;
+    }
+
+    try {
+      showLoader();
+      const response = await googleLogin(credentialResponse.credential);
+      Cookies.set("token", response.token, { expires: 1 });
+
+      toast({ title: "Google login successful" });
+      navigate(`/dashboard/${response.user.id}`);
+    } catch (error: any) {
+      toast({
+        title: "Google login failed",
+        description: error.response?.data?.error || "Google login error",
+        variant: "destructive"
+      });
+    } finally {
+      hideLoader();
     }
   };
 
@@ -324,6 +357,15 @@ const Signup = () => {
             )}
           </form>
         </CardContent>
+
+        <div className="mt-4 flex justify-center">
+          <GoogleLogin
+            onSuccess={handleGoogleLoginSuccess}
+            onError={() => {
+              toast({ title: "Google Login Failed", variant: "destructive" });
+            }}
+          />
+        </div>
 
         <CardFooter>
           <div className="text-center w-full text-sm">

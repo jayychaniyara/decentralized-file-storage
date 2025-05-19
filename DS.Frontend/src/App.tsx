@@ -14,6 +14,7 @@ import ResetPassword from "./pages/ResetPassword";
 import { LoaderProvider } from "@/contexts/LoaderContext";
 import AuthGuard from "./routes/AuthGuard";
 import DashboardGuard from "./routes/DashboardGuard";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const queryClient = new QueryClient();
 
@@ -43,17 +44,19 @@ const AppRoutes = () => {
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <LoaderProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter basename="/BlockStore">
-            <AppRoutes />
-          </BrowserRouter>
-        </TooltipProvider>
-      </LoaderProvider>
-    </QueryClientProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <QueryClientProvider client={queryClient}>
+        <LoaderProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter basename="/BlockStore">
+              <AppRoutes />
+            </BrowserRouter>
+          </TooltipProvider>
+        </LoaderProvider>
+      </QueryClientProvider>
+    </GoogleOAuthProvider>
   );
 };
 

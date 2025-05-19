@@ -48,3 +48,9 @@ export const SignupVerifyOTP = async (email: string, otp: string) => {
   const response = await axios.post("/api/auth/SignupVerifyOTP", { email, otp });
   return response.data;
 };
+
+
+export const googleLogin = async (googleToken: string) => {
+  const res = await axios.post("/api/auth/google-login", { token: googleToken });
+  return res.data;
+}

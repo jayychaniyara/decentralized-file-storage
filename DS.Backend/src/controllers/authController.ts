@@ -45,6 +45,12 @@ export const login = async (req: Request, res: Response): Promise<any> => {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
+    if (!user.password) {
+      return res.status(400).json({
+        error: "This user signed up with Google. Please use Google login.",
+      });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ error: "Invalid credentials" });
@@ -83,7 +89,7 @@ export const resetPasswordSendOTP = async (req: Request, res: Response): Promise
 
     // Generate and send OTP
     const otp = generateOtp();
-    await sendOtpEmail(email, otp, user.username);
+    await sendOtpEmail(email, otp, user.name);
     setOtp(email, otp);
 
     return res.status(200).json({ message: "OTP sent successfully." });
