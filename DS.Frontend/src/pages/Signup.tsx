@@ -358,7 +358,7 @@ const Signup = () => {
           </form>
         </CardContent>
 
-        <div className="mt-4 flex justify-center">
+        <div className="mt-3 mb-4 flex justify-center">
           <GoogleLogin
             onSuccess={handleGoogleLoginSuccess}
             onError={() => {

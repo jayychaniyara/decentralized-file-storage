@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { useLoader } from "@/contexts/LoaderContext";
-import { loginUser } from "@/API/auth";
+import { googleLogin, loginUser } from "@/API/auth";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const { toast } = useToast();
@@ -62,6 +63,32 @@ const Login = () => {
       });
     } finally {
       setLoading(false);
+      hideLoader();
+    }
+  };
+
+  const handleGoogleLoginSuccess = async (
+    credentialResponse: CredentialResponse
+  ) => {
+    if (!credentialResponse.credential) {
+      toast({ title: "Google login failed", variant: "destructive" });
+      return;
+    }
+
+    try {
+      showLoader();
+      const response = await googleLogin(credentialResponse.credential);
+      Cookies.set("token", response.token, { expires: 1 });
+
+      toast({ title: "Google login successful" });
+      navigate(`/dashboard/${response.user.id}`);
+    } catch (error: any) {
+      toast({
+        title: "Google login failed",
+        description: error.response?.data?.error || "Google login error",
+        variant: "destructive"
+      });
+    } finally {
       hideLoader();
     }
   };
@@ -133,6 +160,16 @@ const Login = () => {
             </Button>
           </form>
         </CardContent>
+
+        <div className="mt-3 mb-4 flex justify-center">
+          <GoogleLogin
+            onSuccess={handleGoogleLoginSuccess}
+            onError={() => {
+              toast({ title: "Google Login Failed", variant: "destructive" });
+            }}
+          />
+        </div>
+
         <CardFooter>
           <div className="text-center w-full text-sm">
             Don't have an account?{" "}
